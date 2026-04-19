@@ -1,7 +1,5 @@
 import { motion } from "framer-motion";
 
-const FALLBACK_IMG = "https://via.placeholder.com/400x200?text=No+Image";
-
 const formatDate = (iso) => {
   if (!iso) return "";
   try {
@@ -17,9 +15,23 @@ const formatDate = (iso) => {
   }
 };
 
+const gradientFor = (seed = "") => {
+  const palettes = [
+    "from-indigo-500 via-purple-500 to-pink-500",
+    "from-sky-500 via-cyan-500 to-emerald-500",
+    "from-amber-500 via-orange-500 to-rose-500",
+    "from-slate-700 via-slate-600 to-slate-500",
+    "from-fuchsia-600 via-violet-600 to-blue-600",
+  ];
+  let hash = 0;
+  for (let i = 0; i < seed.length; i += 1) hash = (hash * 31 + seed.charCodeAt(i)) | 0;
+  return palettes[Math.abs(hash) % palettes.length];
+};
+
 const ArticleCard = ({ article }) => {
   const published = formatDate(article.publishedAt);
   const source = article.source?.name;
+  const hasImage = Boolean(article.urlToImage);
 
   return (
     <motion.article
@@ -28,19 +40,41 @@ const ArticleCard = ({ article }) => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <img
-        src={article.urlToImage || FALLBACK_IMG}
-        alt=""
-        loading="lazy"
-        decoding="async"
-        onError={(e) => {
-          if (e.currentTarget.src !== FALLBACK_IMG) e.currentTarget.src = FALLBACK_IMG;
-        }}
-        className="w-full h-52 object-cover bg-gray-100"
-      />
+      {hasImage ? (
+        <img
+          src={article.urlToImage}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          onError={(e) => {
+            e.currentTarget.style.display = "none";
+          }}
+          className="w-full h-52 object-cover bg-gray-100"
+        />
+      ) : (
+        <div
+          aria-hidden="true"
+          className={`w-full h-52 flex items-center justify-center px-4 bg-gradient-to-br ${gradientFor(
+            source || article.title
+          )}`}
+        >
+          <span className="text-white text-lg font-semibold text-center line-clamp-3">
+            {source || article.title}
+          </span>
+        </div>
+      )}
       <div className="p-4 flex flex-col flex-1">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">{article.title}</h2>
-        <p className="text-gray-600 text-sm line-clamp-3 mb-3">{article.description}</p>
+        <h2 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-3">
+          {article.title}
+        </h2>
+        {article.description && (
+          <p className="text-gray-600 text-sm line-clamp-3 mb-3">
+            {article.description}
+          </p>
+        )}
+        {article.meta && (
+          <p className="text-xs text-gray-500 mb-2">{article.meta}</p>
+        )}
         <div className="mt-auto flex items-center justify-between text-xs text-gray-500 mb-2">
           {source && <span className="font-medium">{source}</span>}
           {published && <time dateTime={article.publishedAt}>{published}</time>}
