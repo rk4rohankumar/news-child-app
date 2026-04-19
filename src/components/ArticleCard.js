@@ -28,6 +28,20 @@ const gradientFor = (seed = "") => {
   return palettes[Math.abs(hash) % palettes.length];
 };
 
+const domainOf = (url) => {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+};
+
+const faviconFor = (url, size = 128) => {
+  const d = domainOf(url);
+  if (!d) return "";
+  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(d)}&sz=${size}`;
+};
+
 const ArticleCard = ({ article }) => {
   const published = formatDate(article.publishedAt);
   const source = article.source?.name;
@@ -54,12 +68,24 @@ const ArticleCard = ({ article }) => {
       ) : (
         <div
           aria-hidden="true"
-          className={`w-full h-52 flex items-center justify-center px-4 bg-gradient-to-br ${gradientFor(
+          className={`relative w-full h-52 flex flex-col items-center justify-center gap-3 px-4 bg-gradient-to-br ${gradientFor(
             source || article.title
           )}`}
         >
-          <span className="text-white text-lg font-semibold text-center line-clamp-3">
-            {source || article.title}
+          {faviconFor(article.url) && (
+            <img
+              src={faviconFor(article.url)}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+              className="w-16 h-16 rounded-xl bg-white/90 p-2 shadow-md"
+            />
+          )}
+          <span className="text-white text-sm font-semibold text-center line-clamp-2 drop-shadow">
+            {domainOf(article.url) || source || article.title}
           </span>
         </div>
       )}
