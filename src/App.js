@@ -137,8 +137,8 @@ const NewsPage = () => {
   const handleRetry = () => setReloadToken((n) => n + 1);
 
   return (
-    <main className="max-w-6xl mx-auto p-4">
-      <h1 className="text-3xl font-bold text-center mb-2">Latest News</h1>
+    <section aria-labelledby="news-heading" className="max-w-6xl mx-auto p-4">
+      <h1 id="news-heading" className="text-3xl font-bold text-center mb-2">Latest News</h1>
       <p className="text-center text-xs text-gray-500 mb-6">
         Powered by Hacker News (Algolia) and Spaceflight News — no API key required.
       </p>
@@ -203,7 +203,7 @@ const NewsPage = () => {
           <Pagination page={page} totalPages={totalPages} onChange={setPage} />
         </>
       )}
-    </main>
+    </section>
   );
 };
 

@@ -2,6 +2,7 @@
   "name": "news",
   "version": "0.1.0",
   "private": true,
+  "description": "News micro-frontend remote (webpack Module Federation): searchable, paginated headlines from Hacker News (Algolia) and Spaceflight News. Exposes ./NewsApp for the Micro Frontend host.",
   "dependencies": {
     "@craco/craco": "^7.1.0",
     "autoprefixer": "^10.4.20",
