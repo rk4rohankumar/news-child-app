@@ -1,105 +1,35 @@
-# News Child App Microfrontend
+# News · Micro Frontend remote
 
-This repository contains the **News Child App**, designed as a microfrontend in a larger application architecture. It is built using **React**, **Tailwind CSS**, and the **Module Federation Plugin** for Webpack, and configured with **CRACO** for custom configuration.
+A webpack Module Federation remote (CRA 5 + CRACO 7, React 19, Tailwind 3, axios, framer-motion) that renders searchable, paginated headlines. It runs standalone and is consumed at runtime by the [Micro Frontend host](https://github.com/rk4rohankumar/micro-frontend-host).
 
-## Features
-- Developed as a microfrontend for seamless integration with a parent application.
-- Built with modern technologies like React and Tailwind CSS.
-- Module Federation for dynamic sharing of code between apps.
-- Responsive and optimized for performance.
+## Data sources
 
-## Tech Stack
-- **React**: Frontend library for building user interfaces.
-- **Tailwind CSS**: Utility-first CSS framework for styling.
-- **CRACO (Create React App Configuration Override)**: For extending CRA configuration.
-- **Webpack Module Federation**: For microfrontend architecture.
+No API key or `.env` is required — both APIs are public and CORS-friendly:
 
-## Project Setup
+- Hacker News via Algolia — `https://hn.algolia.com/api/v1/search` (Top Stories, Tech, Ask HN, Show HN)
+- Spaceflight News — `https://api.spaceflightnewsapi.net/v4/articles/` (Space & Science)
 
-### Prerequisites
-- Node.js (>= 14.x)
-- npm or yarn package manager
+## Run / build
 
-### Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/rk4rohankumar/news-child-app.git
-   cd news-child-app
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
-3. create a `.env` file in the root directory and add the following line:
-   ```bash
-   REACT_APP_NEWS_API_KEY=YOUR_NEWS_API_KEY
-   ```
-   Replace `YOUR_NEWS_API_KEY` with your own API key from [NewsAPI](https://newsapi.org/).
-
-### Running the Application
-To start the development server:
 ```bash
-npm start
-# or
-yarn start
-```
-The app will be accessible at [http://localhost:3000](http://localhost:3000).
-
-### Building for Production
-To create a production build:
-```bash
-npm run build
-# or
-yarn build
+npm install
+npm start          # dev server at http://localhost:3000
+npm run build      # production bundle in build/
+npx serve -s build -l 5106   # serve the production bundle locally
 ```
 
-### Configuration Details
-#### CRACO and Webpack
-The project uses **CRACO** to customize the Webpack configuration for supporting Module Federation:
-- **publicPath**: Set to `https://news-child-app.vercel.app/` for deployment.
-- **Module Federation Plugin**:
-  - Name: `NewsApp`
-  - Remote Entry: `remoteEntry.js`
-  - Exposes: `./NewsApp` from `./src/App`
-  - Shared Dependencies: `react`, `react-dom`, and `tailwindcss`
+Deployed at <https://news-child-app.vercel.app/>.
 
-### Deployment
-The app is deployed at: [https://news-child-app.vercel.app/](https://news-child-app.vercel.app/)
+## How the host consumes it
 
-## Microfrontend Integration
-To consume this microfrontend in a parent application, include the following in your Module Federation configuration:
-```javascript
-new ModuleFederationPlugin({
-  remotes: {
-    NewsApp: 'NewsApp@https://news-child-app.vercel.app/remoteEntry.js',
-  },
-})
-```
+| Setting      | Value                                              |
+| ------------ | -------------------------------------------------- |
+| Scope name   | `NewsApp`                                          |
+| Remote entry | `https://news-child-app.vercel.app/remoteEntry.js` |
+| Exposed      | `./NewsApp` → `src/App`                            |
 
-## Scripts
-- `start`: Starts the development server.
-- `build`: Builds the app for production.
-- `test`: Runs tests.
-- `eject`: Ejects the CRA configuration.
+The host injects `remoteEntry.js`, calls `container.init(shareScope)` with its own share scope, then `container.get('./NewsApp')`. `src/index.js` is an async boundary (`import('./bootstrap')`) so shared modules are negotiated before anything renders.
 
-## Folder Structure
-```
-news-child-app/
-├── src/
-│   ├── components/   # Reusable components
-│   ├── App.js         # Main App component
-│   └── index.js       # Entry point
-├── public/            # Static files
-├── craco.config.js    # Custom configuration for Webpack
-└── package.json       # Project metadata and dependencies
-```
+`react`, `react-dom`, `framer-motion` and `axios` are declared as **singletons** (`requiredVersion` read from `package.json`), so the remote reuses the host's copies instead of bundling its own. In production `output.publicPath` is `'auto'`, so chunks resolve relative to wherever `remoteEntry.js` is served from.
 
-## Contribution Guidelines
-Feel free to fork the repository and submit pull requests for any enhancements or bug fixes.
-
-## License
-This project is licensed under the [MIT License](LICENSE).
-
+The exposed component renders a `<section>` (not `<main>`); the standalone shell in `src/bootstrap.js` supplies the `<main>` landmark.
