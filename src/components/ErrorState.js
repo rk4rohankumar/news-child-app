@@ -1,6 +1,6 @@
 const ErrorState = ({ message, onRetry }) => (
   <div
-    className="max-w-xl mx-auto my-12 p-6 bg-red-50 border border-red-200 rounded-lg text-center"
+    className="max-w-xl mx-auto my-12 p-6 bg-red-50 border border-red-200 rounded-[var(--mfe-radius,12px)] text-center"
     role="alert"
   >
     <h2 className="text-xl font-semibold text-red-700 mb-2">Something went wrong</h2>

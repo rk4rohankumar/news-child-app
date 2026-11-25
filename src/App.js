@@ -138,8 +138,9 @@ const NewsPage = () => {
 
   return (
     <section aria-labelledby="news-heading" className="max-w-6xl mx-auto p-4">
-      <h1 id="news-heading" className="text-3xl font-bold text-center mb-2">Latest News</h1>
-      <p className="text-center text-xs text-gray-500 mb-6">
+      <p className="text-xs font-medium uppercase tracking-widest text-[color:var(--mfe-accent,#047857)]">News remote</p>
+      <h1 id="news-heading" className="mt-1 mb-2 text-2xl font-semibold text-[color:var(--mfe-ink,#0f172a)]">Latest News</h1>
+      <p className="text-xs text-[color:var(--mfe-muted,#475569)] mb-6">
         Powered by Hacker News (Algolia) and Spaceflight News — no API key required.
       </p>
 
@@ -156,7 +157,7 @@ const NewsPage = () => {
           id="news-search"
           type="search"
           placeholder="Search news..."
-          className="p-2 border border-gray-300 rounded-md w-full sm:w-72 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="p-2 border border-[color:var(--mfe-border,#e2e8f0)] rounded-md w-full sm:w-72 focus:outline-none focus:ring-2 focus:ring-[color:var(--mfe-accent,#047857)]"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -167,7 +168,7 @@ const NewsPage = () => {
           id="news-category"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="p-2 border border-gray-300 rounded-md w-full sm:w-56 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="p-2 border border-[color:var(--mfe-border,#e2e8f0)] rounded-md w-full sm:w-56 bg-[var(--mfe-surface,#ffffff)] focus:outline-none focus:ring-2 focus:ring-[color:var(--mfe-accent,#047857)]"
         >
           {CATEGORIES.map((c) => (
             <option key={c.value} value={c.value}>
@@ -177,7 +178,7 @@ const NewsPage = () => {
         </select>
       </form>
 
-      <p className="text-sm text-gray-600 text-center mb-4" aria-live="polite">
+      <p className="text-sm text-[color:var(--mfe-muted,#475569)] text-center mb-4" aria-live="polite">
         {loading
           ? "Loading results..."
           : error
